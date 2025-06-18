@@ -84,3 +84,4 @@ filterButtons.forEach(button =>{
         filterTasks(filter)
     })
 })
+
