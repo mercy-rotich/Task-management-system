@@ -85,3 +85,50 @@ filterButtons.forEach(button =>{
     })
 })
 
+taskList.addEventListener('click',function(e){
+    const clickedElement = e.target;
+
+    const taskItem = clickedElement.closest('li');
+
+
+    if (clickedElement.classList.contains('delete-btn')){
+        taskItem.remove()
+    }
+
+
+    else if(clickedElement.classList.contains('complete-btn')){
+        const checkbox = taskItem.querySelectorAll('.task-checkbox')
+
+
+        const isCurrentlyCompleted = this.taskItem.getAttribute('data-completed') ==='true'
+
+
+        if(isCurrentlyCompleted){
+            taskItem.setAttribute('data-completed','false')
+            taskItem.classList.remove('completed')
+
+            checkbox.checked =false;
+        }
+        else{
+            taskItem.setAttribute('data-completed','true')
+            taskItem.classList.add('completed')
+            checkbox.checked=true;
+        }
+        filterTasks(currentFilter)
+    }
+
+    else if(clickedElement.classList.contains('task-checkbox')){
+        const isChecked = clickedElement.checked;
+
+        if(isChecked){
+            taskItem.setAttribute('data-completed','true');
+            taskItem.classList.add('completed')
+        }
+        else{
+            taskItem.setAttribute('data-completed','false')
+            taskItem.classList.remove('completed')
+
+        }
+        filterTasks(currentFilter)
+    }
+})
