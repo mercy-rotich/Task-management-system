@@ -7,14 +7,59 @@ const filterButtons = document.querySelectorAll('.filter-btn')
 let currentFilter = 'all'
 
 
-function addTask(taskText){
-    const li = document.createElement('li')
 
-    li.setAttribute('data-completed','false')
+function saveTasksToStorage(){
+    const tasks = taskList.querySelectorAll('li')
+
+
+    const taskData =[]
+
+
+    tasks.forEach(task =>{
+         const taskText = task.querySelector('.task-text').textContent
+
+         const isCompleted = task.getAttribute('data-completed')=== 'true'
+
+         const taskObject ={
+            text:taskText,
+            completed:isCompleted
+         }
+
+         taskData.push(taskObject)
+    })
+
+    localStorage.setItem('studentTasks', JSON.stringify(taskData))
+
+    console.log('tasks saved to local storage', taskData)
+}
+
+
+function loadTasksFromStorage(){
+    const savedTasks = localStorage.getItem('studentTasks')
+
+
+    if(savedTasks){
+        const taskData = JSON.parse(savedTasks)
+
+
+         taskList.innerHTML = ''
+
+         taskData.forEach(task =>{
+            addTaskToPage(task.text,task.completed)
+         })
+         console.log('tasks loaded from local storage',taskData)
+    }else{
+        console.log('no task found in the local storage')
+    }
+}
+
+
+function addTaskToPage(taskText,isCompleted = false){
+    const li = document.createElement('li')
 
 
     li.innerHTML=`
-        <input type="checkbox" />
+        <input type="checkbox"  class = 'task-checkbox' ${isCompleted ? 'checked' : ''}/>
     <span class="task-text">${taskText}</span>
     <div class="actions">
       <button class="complete-btn" title="Mark as Complete">✓</button>
@@ -24,6 +69,13 @@ function addTask(taskText){
 
 
     taskList.appendChild(li)
+}
+
+function addTask(taskText){
+   addTaskToPage(taskText,false)
+
+   saveTasksToStorage()
+
 }
 
 
@@ -93,6 +145,7 @@ taskList.addEventListener('click',function(e){
 
     if (clickedElement.classList.contains('delete-btn')){
         taskItem.remove()
+        saveTasksToStorage()
     }
 
 
@@ -114,6 +167,7 @@ taskList.addEventListener('click',function(e){
             taskItem.classList.add('completed')
             checkbox.checked=true;
         }
+        saveTasksToStorage()
         filterTasks(currentFilter)
     }
 
@@ -129,6 +183,12 @@ taskList.addEventListener('click',function(e){
             taskItem.classList.remove('completed')
 
         }
+        saveTasksToStorage()
         filterTasks(currentFilter)
     }
+})
+
+
+document.addEventListener('DOMContentLoaded',function(){
+loadTasksFromStorage()
 })

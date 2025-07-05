@@ -92,7 +92,7 @@ ul.task-list li.completed {
     border-radius: 3px;
 }
 
-/* This class is needed for editing tasks */
+
 .task-input-edit {
     flex: 1;
     margin-left: 12px;
@@ -123,7 +123,7 @@ ul.task-list li.completed {
     color: #ef4444;
 }
 
-/* This class is needed for filtering */
+
 .hidden {
     display: none !important;
 }
