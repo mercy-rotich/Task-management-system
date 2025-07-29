@@ -6,6 +6,7 @@ const filterButtons = document.querySelectorAll('.filter-btn')
 
 let currentFilter = 'all'
 
+let taskReminders = {}
 
 
 function saveTasksToStorage(){
@@ -57,12 +58,19 @@ function loadTasksFromStorage(){
 function addTaskToPage(taskText,isCompleted = false){
     const li = document.createElement('li')
 
+    li.setAttribute('data-completed',isCompleted ? 'true' :'false')
+
+    if(isCompleted){
+        li.classList.add('completed')
+    }
+
 
     li.innerHTML=`
         <input type="checkbox"  class = 'task-checkbox' ${isCompleted ? 'checked' : ''}/>
     <span class="task-text">${taskText}</span>
     <div class="actions">
       <button class="complete-btn" title="Mark as Complete">✓</button>
+      <button class="reminder-btn" title="Set Reminder">⏰</button>
       <button class="delete-btn" title="Delete Task">✖</button>
     </div>
     `;
@@ -137,13 +145,55 @@ filterButtons.forEach(button =>{
     })
 })
 
+
+function setTaskReminder(taskElement,minutes){
+    const taskText = taskElement.querySelector('.task-text').textContent
+
+    const taskId = Date.now() + Math.random()
+
+    taskElement.setAttribute('data-task-id',taskId)
+
+    const milliseconds = minutes *60*1000
+
+    console.log(`setting reminder for "${taskText}"`)
+
+    const timerId = setTimeout(()=>{
+        alert(`REMINDER:time to work on "${taskText}"`)
+
+        delete taskReminders(taskId)
+    },milliseconds)
+
+    taskReminders[taskId] = timerId
+}
+
+function cancelReminder(taskId){
+    if(taskReminders[taskId]){
+
+        clearTimeout(taskReminders[taskId])
+
+        delete taskReminders[taskId]
+
+        console.log('reminder cancelled for task ID:',taskId)
+    }
+}
+
+
+
 taskList.addEventListener('click',function(e){
     const clickedElement = e.target;
 
     const taskItem = clickedElement.closest('li');
 
 
+
+
     if (clickedElement.classList.contains('delete-btn')){
+
+        const taskId = taskItem.getAttribute('data-task-id')
+
+        if(taskId){
+            cancelReminder(taskId)
+        }
         taskItem.remove()
         saveTasksToStorage()
     }
@@ -185,6 +235,27 @@ taskList.addEventListener('click',function(e){
         }
         saveTasksToStorage()
         filterTasks(currentFilter)
+    }
+
+    else if (clickedElement.classList.contains('reminder-btn')){
+        const taskText = taskItem.querySelector('.task-text').textContent
+
+        const minutes = prompt(`set reminder for "${taskText}" \nEnter minutes from now:`)
+         if(minutes && !isNaN(minutes) && minutes > 0){
+            setTaskReminder(taskItem, parseInt(minutes))
+
+            clickedElement.style.color ='#f59e0b'
+
+            clickedElement.title = `reminder set for ${minutes} minutes`
+
+            setTimeout(()=>{
+                clickedElement.title= 'setReminder'
+            },2000)
+         }
+
+         else if(minutes !==null ){
+            alert ('please enter a valid number of minutes')
+         }
     }
 })
 
