@@ -71,6 +71,7 @@ function addTaskToPage(taskText,isCompleted = false){
     <div class="actions">
       <button class="complete-btn" title="Mark as Complete">✓</button>
       <button class="reminder-btn" title="Set Reminder">⏰</button>
+      <button class="edit" title="Edit">✏️</button>
       <button class="delete-btn" title="Delete Task">✖</button>
     </div>
     `;
@@ -257,8 +258,46 @@ taskList.addEventListener('click',function(e){
             alert ('please enter a valid number of minutes')
          }
     }
+    else if(clickedElement.classList.contains('edit')) {
+        editTask(taskItem)
+    }
 })
+const editTask = (taskItem) => {
+    const taskElement = taskItem.querySelector('.task-text') 
+    const currentText = taskElement.textContent
 
+    const editInput = document.createElement('input')
+    editInput.type = 'text'
+    editInput.value = currentText
+    editInput.className = 'edit-input'
+
+    taskElement.replaceWith(editInput)
+    editInput.focus()
+
+    //Store edited Text
+    const saveEdited = () => {
+
+    const newText = editInput.value.trim()
+      if(newText && newText !== currentText) {
+        const newTaskElement = document.createElement('span')
+        newTaskElement.className = ('task-text')
+        newTaskElement.textContent = (newText)
+        editInput.replaceWith(newTaskElement)
+        saveTasksToStorage()
+
+    } else {
+
+        editInput.replaceWith(taskElement)
+    }
+}   
+    editInput.addEventListener('keyup', (e) => {
+        if(e.key === 'Enter') {
+            saveEdited()
+        } else if(e.key === 'Escape') {
+            editInput.replaceWith(taskElement)
+        }
+    })
+}
 
 document.addEventListener('DOMContentLoaded',function(){
 loadTasksFromStorage()
