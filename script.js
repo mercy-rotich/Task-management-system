@@ -276,14 +276,17 @@ const editTask = (taskItem) => {
 
     //Store edited Text
     const saveEdited = () => {
+
     const newText = editInput.value.trim()
-    if(newText && newText !== currentText) {
+      if(newText && newText !== currentText) {
         const newTaskElement = document.createElement('span')
         newTaskElement.className = ('task-text')
         newTaskElement.textContent = (newText)
         editInput.replaceWith(newTaskElement)
         saveTasksToStorage()
+
     } else {
+
         editInput.replaceWith(taskElement)
     }
 }   
